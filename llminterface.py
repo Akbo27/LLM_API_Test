@@ -4,25 +4,17 @@ from mistralai import Mistral
 
 dotenv.load_dotenv()
 
-api_key = os.getenv("MISTRAL_API_KEY")
-model = "mistral-larget-latest"
+class LLMInterface:
+    def __init__(self):
+        self.api_key = os.environ["MISTRAL_API_KEY"]
+        self.model = "mistral-larget-latest"
+        self.client = Mistral(api_key=self.api_key)
 
-client = Mistral(api_key=api_key)
-
-def get_graph_details(user_input):
-    try:
-        chat_response = client.chat.complete(
-            model=model,
+    def extract_plot_details(self, user_input):
+        response = self.client.chat.complete(
+            model=self.model,
             messages=[
                 {"role": "user", "content": user_input}
             ]
         )
-
-        return {
-            "function_name": chat_response["function_name"],
-            "x_min": float(chat_response["x_min"]),
-            "x_max": float(chat_response["x_max"])
-        }
-    except Exception as e:
-        print(f"Error communicating with LLM: {e}")
-        return {}
+        return response["choices"][0]["message"]["content"]

@@ -1,28 +1,27 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_graph(function_name, x_min, x_max):
-    try:
+class Plotter:
+    def __init__(self):
+        self.functions = {
+            "y=x": lambda x: x,
+            "y=x^2": lambda x: x**2,
+            "y=sin(x)": np.sin,
+            "y=cos(x)": np.cos
+        }
+
+    def plot(self, function_name, x_min, x_max):
+        if function_name not in self.functions:
+            raise ValueError(f"Unsupported function: {function_name}")
+
         x = np.linspace(x_min, x_max, 500)
+        y = self.functions[function_name](x)
 
-        if function_name == "y=x":
-            y = x
-        elif function_name == "y=x^2":
-            y = x ** 2
-        elif function_name == "y=sin(x)":
-            y = np.sin(x)
-        elif function_name == "y=cos(x)":
-            y = np.cos(x)
-        else:
-            print("Unsupported function.")
-            return
-
-        plt.plot(x, y)
-        plt.title(f"Graph of {function_name}")
+        plt.figure(figsize=(8, 6))
+        plt.plot(x, y, label=function_name)
+        plt.title(f"Plot of {function_name}")
         plt.xlabel("x")
         plt.ylabel("y")
-        plt.grid()
+        plt.legend()
+        plt.grid(True)
         plt.show()
-        
-    except Exception as e:
-        print(f"Error plotting the graph: {e}")

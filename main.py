@@ -1,26 +1,33 @@
-from llminterface import get_graph_details
-from plotter import plot_graph
+from llminterface import LLMInterface
+from plotter import Plotter
 
 def main():
-    print("Welcome to the Graph Plotting App!")
+    llm = LLMInterface()
+    plotter = Plotter()
+
+    print("Welcome to the Graph Plotting Application!")
+
     while True:
-        user_input = input("Describe the plot you need (e.g., 'plot sine function from -5 to 5'): ")
-        
-        if user_input.lower() in ["exit", "quit", "bye"]:
-            print("Thank you for using the Graph Plotting App. Goodbye!")
+        user_input = input("What plot do you need? (e.g., 'Plot sine function from -5 to 5')\n")
+
+        if "bye" in user_input.lower():
+            print("Thank you for using the application! Goodbye!")
             break
-        
-        response = get_graph_details(user_input)
-        
-        if response.get("function_name") and response.get("x_min") is not None and response.get("x_max") is not None:
-            function_name = response["function_name"]
-            x_min = response["x_min"]
-            x_max = response["x_max"]
-            
-            # Plot the graph
-            plot_graph(function_name, x_min, x_max)
-        else:
-            print("Please try again.")
+
+        try:
+            llm_response = llm.extract_plot_details(user_input)
+            print(f"LLM Response: {llm_response}")
+
+            # Example LLM response parsing: "function_name,x_min,x_max"
+            function_name, x_min, x_max = llm_response.split(",")
+            function_name = function_name.strip()
+            x_min = float(x_min.strip())
+            x_max = float(x_max.strip())
+
+            plotter.plot(function_name, x_min, x_max)
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main()
